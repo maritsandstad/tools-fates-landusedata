@@ -133,7 +133,13 @@ def main(args):
     print(
         "Before writing output, apply capping threshold to avoid very small values from regridding"
     )
-    ds_output = ds_output.where(ds_output > COMMON_CAP_THRESHOLD, ds_output, 0.0)
+    print(ds_output.data_vars)
+    #sys.exit(4)
+    for var in ds_output.data_vars:
+        if var in ["time", "lsmlat", "lsmlon", "lat", "lon", "latitude", "longitude", "YEAR", "LONGXY", "LATIXY"]:
+            continue
+        ds_output[var] = ds_output[var].where(ds_output[var] > COMMON_CAP_THRESHOLD, 0.0)
+    #ds_output = ds_output.where(ds_output > COMMON_CAP_THRESHOLD, ds_output, 0.0)
 
     # Set the output encoding for missing values to be -999 instead of the default NaN
     encoding = {var: {"_FillValue": -999.0} for var in ds_output.data_vars}
